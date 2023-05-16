@@ -1,0 +1,11 @@
+<resources>
+
+    <style name="Theme.Signage" parent="@style/Theme.Leanback" />
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Leanback" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.Leanback" parent="Base.Theme.Leanback" />
+</resources>

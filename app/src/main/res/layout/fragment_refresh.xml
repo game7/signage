@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".settings.RefreshFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textRefresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="How often should content be refreshed?" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioButton
+                        android:id="@+id/radioRefreshNever"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Never" />
+
+                    <RadioButton
+                        android:id="@+id/radioRefresh5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="5 Minutes" />
+
+                    <RadioButton
+                        android:id="@+id/radioRefresh10"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="10 MInutes" />
+
+                    <RadioButton
+                        android:id="@+id/radioRefresh30"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="30 Minutes" />
+
+                    <RadioButton
+                        android:id="@+id/radioRefresh60"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="1 Hour" />
+                </RadioGroup>
+
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
