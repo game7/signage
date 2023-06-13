@@ -63,6 +63,7 @@ class SettingsFragment : Fragment() {
         }
 
         if(savedInstanceState == null) {
+            activateButton(btnOrientation)
             showFragment(OrientationFragment())
         }
 

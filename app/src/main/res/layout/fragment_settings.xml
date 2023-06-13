@@ -6,53 +6,60 @@
     android:orientation="vertical"
     tools:context=".SettingsFragment">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:divider="@drawable/settings_menu_divider"
+        android:showDividers="middle"
+        android:background="#333333"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnOrientation"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:text="@string/orientation"
+            android:textColor="@color/settings_button_text"
+            tools:ignore="VisualLintButtonSize" />
 
-            <Button
-                android:id="@+id/btnOrientation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/orientation"
-                android:textColor="@color/settings_button_text"
-                tools:ignore="VisualLintButtonSize" />
+        <Button
+            android:id="@+id/btnLaunch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/settings_menu_button"
+            android:text="@string/launch"
+            android:textColor="@color/settings_button_text"
+            tools:ignore="VisualLintButtonSize" />
 
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/refresh"
+            android:textColor="@color/settings_button_text"
+            tools:ignore="VisualLintButtonSize" />
 
-            <Button
-                android:id="@+id/btnLaunch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/launch"
-                android:textColor="@color/settings_button_text"
-                tools:ignore="VisualLintButtonSize" />
+        <Button
+            android:id="@+id/btnUrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/url"
+            android:textColor="@color/settings_button_text"
+            tools:ignore="VisualLintButtonSize" />
 
-            <Button
-                android:id="@+id/btnRefresh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/refresh"
-                android:textColor="@color/settings_button_text"
-                tools:ignore="VisualLintButtonSize" />
+    </LinearLayout>
 
-            <Button
-                android:id="@+id/btnUrl"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/url"
-                android:textColor="@color/settings_button_text"
-                tools:ignore="VisualLintButtonSize" />
-
-        </LinearLayout>
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/settingsScreen"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/settingsScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
