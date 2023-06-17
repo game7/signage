@@ -41,7 +41,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:capitalize="none"
-                    android:text="Set to 'http://screen.sportified.net/screen'" />
+                    android:text="Set to 'https://screen.sportified.net/screen'" />
 
             </LinearLayout>
         </FrameLayout>

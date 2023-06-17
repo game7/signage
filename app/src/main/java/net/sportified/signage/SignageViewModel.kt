@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class SignageViewModel(app: Application) : AndroidViewModel(app) {
-    private val DEFAULT_URL = "http://screen.sportified.net/screen"
+    private val DEFAULT_URL = "https://screen.sportified.net/screen"
 
     var showSettings = false
 

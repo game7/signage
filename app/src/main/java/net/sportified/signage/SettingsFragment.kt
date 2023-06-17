@@ -5,10 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.tabs.TabLayout.TabView
+import net.sportified.signage.controls.SettingsMenuButton
 import net.sportified.signage.settings.LaunchFragment
 import net.sportified.signage.settings.OrientationFragment
 import net.sportified.signage.settings.RefreshFragment
@@ -29,10 +28,10 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
-        val btnOrientation = view.findViewById<Button>(R.id.btnOrientation)
-        val btnLaunch = view.findViewById<Button>(R.id.btnLaunch)
-        val btnRefresh = view.findViewById<Button>(R.id.btnRefresh)
-        val btnUrl = view.findViewById<Button>(R.id.btnUrl)
+        val btnOrientation = view.findViewById<SettingsMenuButton>(R.id.btnOrientation)
+        val btnLaunch = view.findViewById<SettingsMenuButton>(R.id.btnLaunch)
+        val btnRefresh = view.findViewById<SettingsMenuButton>(R.id.btnRefresh)
+        val btnUrl = view.findViewById<SettingsMenuButton>(R.id.btnUrl)
 
         val buttons = arrayOf(
             btnOrientation,
@@ -41,8 +40,15 @@ class SettingsFragment : Fragment() {
             btnUrl
         )
 
-        val activateButton = { toActivate:Button ->
-            buttons.forEach { button -> button.isActivated = button == toActivate }
+        val activateButton = { toActivate:SettingsMenuButton ->
+            buttons.forEach { button ->
+                if (button == toActivate) {
+                    button.background = context?.getDrawable(R.drawable.settings_menu_active_button)
+                }
+                else {
+                    button.background = context?.getDrawable(R.drawable.settings_menu_button)
+                }
+            }
         }
 
         btnOrientation.setOnClickListener {
