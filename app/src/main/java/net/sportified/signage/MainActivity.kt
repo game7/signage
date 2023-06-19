@@ -23,8 +23,6 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
         // required to enable http request
         // https://stackoverflow.com/questions/22395417/error-strictmodeandroidblockguardpolicy-onnetwork
         val policy = ThreadPolicy.Builder().permitAll().build()
@@ -52,6 +50,8 @@ class MainActivity : FragmentActivity() {
         if(savedInstanceState == null) {
             showWebView()
         }
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onBackPressed() {
