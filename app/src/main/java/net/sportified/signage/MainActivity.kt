@@ -1,8 +1,10 @@
 package net.sportified.signage
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.view.View
@@ -19,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 class MainActivity : FragmentActivity() {
 
     private lateinit var viewModel: SignageViewModel
+    private lateinit var wakeLock: PowerManager.WakeLock
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,22 @@ class MainActivity : FragmentActivity() {
         }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+            newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Signage::WakeLock").apply {
+                acquire()
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        wakeLock.release()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        wakeLock.acquire()
     }
 
     override fun onBackPressed() {
