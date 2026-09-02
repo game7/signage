@@ -1,0 +1,62 @@
+{
+  "name": "signage (Fire TV / Android)",
+
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      // Default to the uid/gid of the first user on most Linux/macOS hosts.
+      // If a workstation's primary user id differs, adjust these once here
+      // (and rebuild) so workspace files keep the right ownership.
+      "USER_UID": "1000",
+      "USER_GID": "1000"
+    }
+  },
+
+  // The container user's whole home is persisted in a single named volume.
+  // That covers Gradle caches (~/.gradle), opencode config/data/cache
+  // (~/.config/opencode, ~/.local/share/opencode, ~/.cache/opencode), shell
+  // history, and anything else written to $HOME -- no per-tool bind mounts.
+  "mounts": [
+    "source=signage-home,target=/home/vscode,type=volume"
+  ],
+
+  // Pass the host's KVM device through so the Android emulator can use hardware
+  // acceleration. NOTE: the host must have /dev/kvm (Linux or WSL2 with nested
+  // virtualization enabled). On hosts without it (e.g. macOS), remove this line
+  // so the container still starts -- the emulator just can't run there.
+  "runArgs": ["--device=/dev/kvm"],
+
+  // Expose the emulator's console/adb ports to the host so tools like scrcpy
+  // can connect from the Windows/macOS/Linux desktop to view and control it.
+  "forwardPorts": [5554, 5555],
+  "portsAttributes": {
+    "5555": {
+      "label": "Android Emulator (adb)",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Non-root user. The workspace is bind mounted from the host and owned by
+  // the host user (uid 1000 by default, see build args above), so files the
+  // container creates in the repo are owned by that same host user -- no
+  // root-owned files leak back to the host filesystem.
+  "remoteUser": "vscode",
+
+  // Warm the Gradle wrapper and start the adb server after first creation.
+  // --no-daemon keeps this from leaving a long-lived daemon that competes with
+  // the build daemon for memory at container startup.
+  "postCreateCommand": "adb start-server && ./gradlew --no-daemon --version",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "fwcd.kotlin",
+        "richardwillis.vscode-gradle"
+      ],
+      "settings": {
+        "gradle.java.home": "/opt/java"
+      }
+    }
+  }
+}
