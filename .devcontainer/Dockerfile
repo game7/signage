@@ -46,6 +46,19 @@ RUN apt-get update \
         libgtk-3-0 \
  && rm -rf /var/lib/apt/lists/*
 
+# GitHub CLI from the official apt repo (the Ubuntu package is 2.x from 2022
+# and too old for current GitHub features like sub-issues). curl comes from the
+# base tooling step above, so this stays after it.
+RUN mkdir -p -m 0755 /etc/apt/keyrings \
+ && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+        -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+ && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+ && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+        > /etc/apt/sources.list.d/github-cli.list \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends gh \
+ && rm -rf /var/lib/apt/lists/*
+
 # Passwordless sudo for the vscode user (installing tools, adb, etc.).
 RUN echo "${USERNAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} \
  && chmod 0440 /etc/sudoers.d/${USERNAME}
