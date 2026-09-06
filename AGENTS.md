@@ -24,9 +24,29 @@ GH_TOKEN="$(gh-bot-token)" gh <command>
 ```
 
 `gh-bot-token` mints a short-lived (~1h) installation token for the `game7-bot`
-GitHub App. The helper lives at `~/.local/bin/gh-bot-token` (WSL and devcontainer
-home volume); the app private key at `~/game7-bot.pem` (`/home/vscode/game7-bot.pem`
-in the container). Tokens expire, so mint fresh per command — do not cache them.
+GitHub App. The canonical copy of the helper is `scripts/gh-bot-token` in this
+repo; install it to `~/.local/bin/gh-bot-token` (and ensure `~/.local/bin` is on
+PATH, or call it by full path). The app private key is **not** in the repo —
+see "Provisioning a new workstation" below.
+
+Tokens expire, so mint fresh per command — do not cache them.
+
+## Provisioning a new workstation (one-time, human)
+
+The GitHub App private key is a secret and is never committed. To run agents on
+a new machine, a human must:
+
+1. Place the `game7-bot.pem` private key (downloaded from the GitHub App settings
+   page) at `~/game7-bot.pem`, `chmod 600` it.
+2. Install the helper: `install -m 700 scripts/gh-bot-token ~/.local/bin/gh-bot-token`
+   (in the devcontainer this is `/home/vscode/.local/bin/gh-bot-token`, and the
+   key goes to `/home/vscode/game7-bot.pem`).
+3. Verify: `GH_TOKEN="$(gh-bot-token)" gh api /installation/repositories` lists
+   `game7/signage` and `game7/sportified`.
+
+The App ID (`4854117`) and installation ID (`159609405`) are baked into the
+helper defaults; override with `GH_BOT_APP_ID` / `GH_BOT_INSTALL_ID` / `GH_BOT_KEY`
+if they ever change.
 
 ## Workflow: issues -> PRs (required)
 

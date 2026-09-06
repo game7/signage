@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Mint a short-lived GitHub App installation token for the game7-bot app.
+# Prints the token to stdout. Set GH_BOT_APP_ID / GH_BOT_INSTALL_ID / GH_BOT_KEY
+# to override the defaults.
+#
+# Usage:   GH_TOKEN="$(gh-bot-token)" gh issue list
+#          git config credential.helper '!f(){ echo "username=x-access-token"; echo "password=$(gh-bot-token)"; }; f'
+set -euo pipefail
+
+APP_ID="${GH_BOT_APP_ID:-4854117}"
+INSTALL_ID="${GH_BOT_INSTALL_ID:-159609405}"
+KEY="${GH_BOT_KEY:-$HOME/game7-bot.pem}"
+
+[ -f "$KEY" ] || { echo "error: private key not found at $KEY" >&2; exit 1; }
+
+now=$(date +%s)
+b64() { openssl base64 -A | tr '+/' '-_' | tr -d '=\n'; }
+header=$(printf '{"alg":"RS256","typ":"JWT"}' | b64)
+payload=$(printf '{"iat":%s,"exp":%s,"iss":"%s"}' "$now" "$((now+300))" "$APP_ID" | b64)
+sig=$(printf '%s' "$header.$payload" | openssl dgst -sha256 -sign "$KEY" | b64)
+
+curl -fsSL -X POST \
+  -H "Authorization: Bearer $header.$payload.$sig" \
+  -H "Accept: application/vnd.github+json" \
+  "https://api.github.com/app/installations/$INSTALL_ID/access_tokens" \
+  | grep -o '"token": *"[^"]*"' | cut -d'"' -f4

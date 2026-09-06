@@ -26,7 +26,7 @@ This repo is developed by a human and automated agents, and their work is delibe
 - The game7 vs. game7-bot split is visible in `git log` and in the GitHub activity feed (the bot shows a bot badge).
 
 ### Credentials
-- Agents authenticate as the `game7-bot` GitHub App via the `gh-bot-token` helper (at `~/.local/bin/gh-bot-token` in WSL and in the devcontainer home volume). The app private key is `~/game7-bot.pem` (`/home/vscode/game7-bot.pem` in the container). Install tokens are short-lived (~1h).
+- Agents authenticate as the `game7-bot` GitHub App via the `gh-bot-token` helper (canonical copy at `scripts/gh-bot-token`, installed to `~/.local/bin/gh-bot-token`). The app private key is a secret, kept out of the repo — see the provisioning steps in [AGENTS.md](AGENTS.md). Install tokens are short-lived (~1h).
 - Git pushes on this machine use the bot token via the global git credential helper. To push as yourself instead: `git config --global --unset credential.helper`, then authenticate with your own credentials.
 - The app is scoped to `game7/signage` and `game7/sportified` only.
 
