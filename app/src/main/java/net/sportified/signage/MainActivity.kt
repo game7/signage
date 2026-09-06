@@ -11,10 +11,10 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 
 
@@ -34,6 +34,25 @@ class MainActivity : FragmentActivity() {
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProvider(this)[SignageViewModel::class.java]
+
+        // Predictive back (targetSdk 36): use the OnBackPressedDispatcher instead
+        // of the deprecated onBackPressed() override.
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewModel.showSettings) {
+                    showWebView()
+                    return
+                }
+
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Exit Signage")
+                    .setMessage("Would you like to exit?")
+                    .setPositiveButton("Yes") { _, _ -> finish() }
+                    .setNegativeButton("No") { _, _ -> {} }
+                    .setNeutralButton("Settings") { _, _ -> showSettings() }
+                    .show()
+            }
+        })
 
         val root = findViewById<FrameLayout>(R.id.root)
         val content = findViewById<FrameLayout>(R.id.content)
@@ -71,23 +90,6 @@ class MainActivity : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         wakeLock.acquire()
-    }
-
-    override fun onBackPressed() {
-        if(viewModel.showSettings) {
-            showWebView();
-            return
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("Exit Signage")
-            .setMessage("Would you like to exit?")
-            .setPositiveButton("Yes") {
-                    _, _ -> super.onBackPressed()
-            }
-            .setNegativeButton("No") { _,_ -> {} }
-            .setNeutralButton("Settings") { _,_ -> showSettings() }
-            .show();
     }
 
     private fun applyRotation(root: FrameLayout, content: FrameLayout) {
