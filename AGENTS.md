@@ -25,24 +25,28 @@ GH_TOKEN="$(gh-bot-token)" gh <command>
 
 `gh-bot-token` mints a short-lived (~1h) installation token for the `game7-bot`
 GitHub App. The canonical copy of the helper is `scripts/gh-bot-token` in this
-repo; install it to `~/.local/bin/gh-bot-token` (and ensure `~/.local/bin` is on
-PATH, or call it by full path). The app private key is **not** in the repo —
-see "Provisioning a new workstation" below.
+repo. The app private key is **not** in the repo — see "Provisioning a new
+workstation" below.
 
 Tokens expire, so mint fresh per command — do not cache them.
 
+Push authentication: after `scripts/setup-bot.sh` has been run on a machine,
+plain `git push` already authenticates as the bot (it installs a github.com
+credential helper using the generic `$HOME/.local/bin/gh-bot-token` path). The
+commit **author** is set explicitly per commit (above) and is independent of the
+push credential.
+
 ## Provisioning a new workstation (one-time, human)
 
-The GitHub App private key is a secret and is never committed. To run agents on
-a new machine, a human must:
+The GitHub App private key is a secret and is never committed. The convention on
+**every machine** (host OS and the devcontainer) is:
 
-1. Place the `game7-bot.pem` private key (downloaded from the GitHub App settings
-   page) at `~/game7-bot.pem`, `chmod 600` it.
-2. Install the helper: `install -m 700 scripts/gh-bot-token ~/.local/bin/gh-bot-token`
-   (in the devcontainer this is `/home/vscode/.local/bin/gh-bot-token`, and the
-   key goes to `/home/vscode/game7-bot.pem`).
-3. Verify: `GH_TOKEN="$(gh-bot-token)" gh api /installation/repositories` lists
-   `game7/signage` and `game7/sportified`.
+1. Retrieve the key from the password manager (Bitwarden) and save it to
+   `~/game7-bot.pem`, then `chmod 600` it. (`~` is `/home/vscode` inside the
+   devcontainer.)
+2. Run `scripts/setup-bot.sh` — it installs the helper, configures `git push` to
+   authenticate as the bot, and verifies that `game7/signage` and
+   `game7/sportified` are reachable.
 
 The App ID (`4854117`) and installation ID (`159609405`) are baked into the
 helper defaults; override with `GH_BOT_APP_ID` / `GH_BOT_INSTALL_ID` / `GH_BOT_KEY`

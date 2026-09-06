@@ -26,9 +26,9 @@ This repo is developed by a human and automated agents, and their work is delibe
 - The game7 vs. game7-bot split is visible in `git log` and in the GitHub activity feed (the bot shows a bot badge).
 
 ### Credentials
-- Agents authenticate as the `game7-bot` GitHub App via the `gh-bot-token` helper (canonical copy at `scripts/gh-bot-token`, installed to `~/.local/bin/gh-bot-token`). The app private key is a secret, kept out of the repo — see the provisioning steps in [AGENTS.md](AGENTS.md). Install tokens are short-lived (~1h).
-- Git pushes on this machine use the bot token via the global git credential helper. To push as yourself instead: `git config --global --unset credential.helper`, then authenticate with your own credentials.
-- The app is scoped to `game7/signage` and `game7/sportified` only.
+- Agents authenticate as the `game7-bot` GitHub App via the `gh-bot-token` helper (canonical copy at `scripts/gh-bot-token`). The app private key is a secret, kept out of the repo.
+- **Multi-machine convention:** on each machine, retrieve the key from your password manager to `~/game7-bot.pem` (`chmod 600`), then run `scripts/setup-bot.sh`. That installs the helper, makes plain `git push` authenticate as the bot, and verifies access to `game7/signage` and `game7/sportified`. The GitHub App is account-scoped, so the same key works everywhere.
+- Commit authors stay distinct: agents use the `game7-bot[bot]` identity (see [AGENTS.md](AGENTS.md)); your own commits use `game7`.
 
 ### Agent instructions
 The exact rules agents must follow — identity, issue→branch→PR workflow, and the required build/verify checks — are in [AGENTS.md](AGENTS.md).
