@@ -10,6 +10,29 @@ This application is currently not published to the Amazon App Store (yet) and th
 
 The repo ships with a [dev container](.devcontainer/) so the environment is identical on any machine (Windows, macOS, Linux) without installing Android Studio. It provides JDK 17, the Android SDK, Gradle, `adb`, and [opencode](https://opencode.ai).
 
+## Operating model: humans + agents
+
+This repo is developed by a human and automated agents, and their work is deliberately kept distinct.
+
+| Identity | Role | Commit author |
+|---|---|---|
+| **game7** | Human: reviews PRs, owns `human`-labelled issues (device testing, store assets, Appstore console), does the final submission | `game7 <cmwoodall@yahoo.com>` |
+| **game7-bot** | GitHub App automation identity: opens issues/PRs, pushes branches, posts comments, runs builds | `game7-bot[bot] <4854117+game7-bot[bot]@users.noreply.github.com>` |
+
+### How work flows
+- All work is tracked as **GitHub issues**. Amazon Appstore publishing work is tagged `publish` (see [issue #1](https://github.com/game7/signage/issues/1)).
+- Each issue becomes **one branch** (`opencode/<issue-number>-...`) and **one PR**, created by the agent and reviewed by the human.
+- **Labels:** `agent` (an agent can do it), `human` (needs you), `publish` (Appstore work). Filter by label to see who's responsible.
+- The game7 vs. game7-bot split is visible in `git log` and in the GitHub activity feed (the bot shows a bot badge).
+
+### Credentials
+- Agents authenticate as the `game7-bot` GitHub App via the `gh-bot-token` helper (at `~/.local/bin/gh-bot-token` in WSL and in the devcontainer home volume). The app private key is `~/game7-bot.pem` (`/home/vscode/game7-bot.pem` in the container). Install tokens are short-lived (~1h).
+- Git pushes on this machine use the bot token via the global git credential helper. To push as yourself instead: `git config --global --unset credential.helper`, then authenticate with your own credentials.
+- The app is scoped to `game7/signage` and `game7/sportified` only.
+
+### Agent instructions
+The exact rules agents must follow — identity, issue→branch→PR workflow, and the required build/verify checks — are in [AGENTS.md](AGENTS.md).
+
 * Open the repo in VS Code and run **"Reopen in Container"** (`Dev Containers: Reopen in Container`).
 * Build the debug APK: `./gradlew assembleDebug`
 * Build a release APK: `./gradlew assembleRelease`
