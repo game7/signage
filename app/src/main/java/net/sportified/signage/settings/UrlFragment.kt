@@ -46,10 +46,23 @@ class UrlFragment : Fragment() {
         var view = inflater.inflate(R.layout.fragment_url, container, false)
         var editUrlLayout = view.findViewById<TextInputLayout>(R.id.editUrlLayout)
         var editUrl = view.findViewById<TextInputEditText>(R.id.editUrl)
+        var demoSwitch = view.findViewById<Switch>(R.id.switchDemo)
+        var btnSportifiedDefault = view.findViewById<Button>(R.id.btnSportifiedDefault)
 
         viewModel.log("URL_VIEW_CREATED")
         viewModel.log("VIEW_MODEL_URL_VALUE: ${viewModel.url.value}")
         viewModel.log("EDIT_URL_VALUE: ${editUrl.text}")
+
+        // demo mode switch: on = bundled demo, off = the URL below
+        demoSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.demoMode.value = isChecked
+            editUrl.isEnabled = !isChecked
+            btnSportifiedDefault.isEnabled = !isChecked
+            if (isChecked) {
+                editUrlLayout.error = null
+                editUrlLayout.isErrorEnabled = false
+            }
+        }
 
         // capture url change
         editUrl.setOnFocusChangeListener {
@@ -61,6 +74,7 @@ class UrlFragment : Fragment() {
                         editUrlLayout.error = null
                         editUrlLayout.isErrorEnabled = false
                         viewModel.url.value = (v as? TextInputEditText)?.text.toString()
+                        viewModel.demoMode.value = false
                     } else {
                         editUrlLayout.error = "Invalid URL"
                         editUrlLayout.isErrorEnabled = true
@@ -69,12 +83,18 @@ class UrlFragment : Fragment() {
         }
 
         // set default button click
-        view.findViewById<Button>(R.id.btnSportifiedDefault).setOnClickListener {
+        btnSportifiedDefault.setOnClickListener {
             viewModel.setDefaultUrl()
             editUrl.setText(viewModel.url.value ?: "")
         }
 
         editUrl.setText(viewModel.url.value ?: "")
+
+        if(savedInstanceState == null) {
+            demoSwitch.isChecked = viewModel.demoMode.value ?: true
+            editUrl.isEnabled = !demoSwitch.isChecked
+            btnSportifiedDefault.isEnabled = !demoSwitch.isChecked
+        }
 
         return view
 

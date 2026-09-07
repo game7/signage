@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game 7 Signage — Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    background: #000;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    color: #fff;
+  }
+  #stage {
+    width: 100%; height: 100%;
+    position: relative;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6vh 8vw;
+    opacity: 0;
+    transition: opacity .8s ease-in-out;
+  }
+  .slide.active { opacity: 1; }
+  .brand {
+    font-size: min(9vh, 9vw);
+    font-weight: 700;
+    letter-spacing: .04em;
+    margin-bottom: 2vh;
+  }
+  .brand span { color: #f6a821; }
+  .headline {
+    font-size: min(6.5vh, 6.5vw);
+    font-weight: 400;
+    line-height: 1.25;
+    max-width: 80vw;
+  }
+  .sub {
+    font-size: min(3.2vh, 3.2vw);
+    font-weight: 300;
+    color: #bbb;
+    margin-top: 2.5vh;
+    max-width: 72vw;
+    line-height: 1.4;
+  }
+  .badge {
+    position: absolute; top: 3vh; right: 3vw;
+    border: 2px solid #f6a821; color: #f6a821;
+    font-size: min(2.6vh, 2.6vw);
+    font-weight: 700; letter-spacing: .15em;
+    padding: 1vh 1.5vw;
+  }
+  .footer {
+    position: absolute; bottom: 3vh; left: 0; right: 0;
+    text-align: center;
+    font-size: min(2.2vh, 2.2vw);
+    color: #666;
+  }
+  .dots {
+    position: absolute; bottom: 12vh; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 1.5vw;
+  }
+  .dot {
+    width: 1.2vh; height: 1.2vh; border-radius: 50%;
+    background: #444;
+  }
+  .dot.active { background: #f6a821; }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <div class="badge">DEMO</div>
+
+    <div class="slide active">
+      <div class="brand">GAME7 <span>SIGNAGE</span></div>
+      <div class="headline">Full-screen web display for your TVs</div>
+      <div class="sub">This is the built-in demo. Open Settings to point the player at your own content.</div>
+    </div>
+
+    <div class="slide">
+      <div class="brand">ORIENTATION</div>
+      <div class="headline">Rotate to any orientation</div>
+      <div class="sub">Portrait, landscape, or reversed — try it in Settings → Orientation and watch this display turn.</div>
+    </div>
+
+    <div class="slide">
+      <div class="brand">ALWAYS ON</div>
+      <div class="headline">Keep-alive &amp; auto-launch</div>
+      <div class="sub">Stays awake, refreshes on a schedule, and can start automatically when the device boots.</div>
+    </div>
+
+    <div class="slide">
+      <div class="brand">YOUR CONTENT</div>
+      <div class="headline">One URL is all it takes</div>
+      <div class="sub">Settings → URL lets you load any website or your Sportified screen.</div>
+    </div>
+
+    <div class="dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="footer">game7.net &middot; digital signage for Fire TV</div>
+  </div>
+
+<script>
+  (function () {
+    var slides = document.querySelectorAll('.slide');
+    var dots = document.querySelectorAll('.dot');
+    var current = 0;
+    var INTERVAL = 6000;
+    setInterval(function () {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+    }, INTERVAL);
+  })();
+</script>
+</body>
+</html>

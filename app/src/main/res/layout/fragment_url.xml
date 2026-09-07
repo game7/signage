@@ -23,6 +23,17 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+                <Switch
+                    android:id="@+id/switchDemo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Demo content" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Show the bundled demo instead of a URL" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/editUrlLayout"
                     android:layout_width="400dp"

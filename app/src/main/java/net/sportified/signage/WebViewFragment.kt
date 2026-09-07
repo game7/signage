@@ -59,7 +59,13 @@ class WebViewFragment : Fragment() {
 
         webView.settings.mediaPlaybackRequiresUserGesture = false
 
-        webView.loadUrl(viewModel.url.value!!)
+        val contentUrl = if (viewModel.demoMode.value == true) {
+            SignageViewModel.DEMO_URL
+        } else {
+            viewModel.url.value!!
+        }
+        viewModel.log("LOADING $contentUrl")
+        webView.loadUrl(contentUrl)
 
         setupReload(webView, viewModel.refreshIntervalInSeconds.value!!)
 
