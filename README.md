@@ -42,9 +42,11 @@ The exact rules agents must follow — identity, issue→branch→PR workflow, a
 
 ### Release signing
 
-The release build is signed with a keystore that is **not** committed (see `.gitignore`). To create it on any workstation:
+Release signing is driven by a single gitignored file: `keystore.properties`. It holds the store password, the key alias, and the keystore itself (base64-encoded) — the build reconstructs the `.jks` from it, so there is exactly **one thing** to generate, back up, and restore.
 
-1. Generate a keystore (see `keytool` below). The recommended location is `app/release/`. Use a **single password** for both the store and the key:
+Create it once on any machine:
+
+1. Generate a keystore. Use a **single password** for the store and the key:
    ```sh
    mkdir -p app/release
    keytool -genkeypair -v \
@@ -53,16 +55,21 @@ The release build is signed with a keystore that is **not** committed (see `.git
      -storepass <password> \
      -dname "CN=Sportified Signage, O=Sportified, C=US"
    ```
-2. Create `keystore.properties` in the repo root (gitignored). The keystore uses a single password, so `storePassword` covers both the store and the key:
+2. Encode it and write `keystore.properties` in the repo root:
+   ```sh
+   base64 -w0 app/release/sportified-signage-release.jks
+   ```
    ```properties
-   storeFile=app/release/sportified-signage-release.jks
    storePassword=<password>
    keyAlias=signage
+   keystoreBase64=<base64 blob from the command above>
    ```
-3. `./gradlew assembleRelease` now signs with the release key. Verify with:
+3. `./gradlew assembleRelease` now signs with the release key (the `.jks` is written back to `app/release/` on first build). Verify with:
    `apksigner verify --print-certs app/build/outputs/apk/release/<apk>.apk`
 
-If `keystore.properties` is absent, `assembleRelease` still succeeds but falls back to debug signing with a warning, so the default build never breaks on machines without the release key. Back up the keystore somewhere safe — it is the signing identity, and losing it means you can no longer update a published app.
+**Back up the entire contents of `keystore.properties`** (password + base64) somewhere safe, e.g. a Bitwarden entry — that single blob is the whole signing identity. On a new workstation, create `keystore.properties` with that blob and build; nothing else to copy.
+
+If `keystore.properties` is absent, `assembleRelease` still succeeds but falls back to debug signing with a warning, so the default build never breaks on machines without the release key. Losing the file means you can no longer update a published app — the signing key can't be rotated.
 
 ### Host requirements
 

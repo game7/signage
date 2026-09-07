@@ -3,15 +3,24 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-// Release signing. keystore.properties is gitignored; create it with the
-// keytool command documented in README.md ("Release signing"). When it is
+// Release signing. keystore.properties is gitignored and is the single source
+// of truth: it holds the store password, key alias, and the keystore itself
+// (base64-encoded). The .jks file is reconstructed from it at build time, so
+// there is only one thing to keep and restore. When keystore.properties is
 // absent the release build falls back to debug signing so assembleRelease
 // still works on workstations that don't hold the release keystore.
 def keystorePropertiesFile = rootProject.file('keystore.properties')
+def releaseKeystoreFile = rootProject.file('app/release/sportified-signage-release.jks')
 def hasReleaseKeystore = false
 def keystoreProperties = new Properties()
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+    if (keystoreProperties['keystoreBase64']) {
+        releaseKeystoreFile.parentFile.mkdirs()
+        if (!releaseKeystoreFile.exists()) {
+            releaseKeystoreFile.bytes = Base64.getDecoder().decode(keystoreProperties['keystoreBase64'])
+        }
+    }
     hasReleaseKeystore = true
 }
 
@@ -24,7 +33,7 @@ android {
             if (hasReleaseKeystore) {
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['storePassword']
-                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storeFile releaseKeystoreFile
                 storePassword keystoreProperties['storePassword']
             }
         }
