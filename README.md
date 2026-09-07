@@ -53,12 +53,11 @@ The release build is signed with a keystore that is **not** committed (see `.git
      -storepass <password> \
      -dname "CN=Sportified Signage, O=Sportified, C=US"
    ```
-2. Create `keystore.properties` in the repo root (gitignored), setting both password fields to that same value:
+2. Create `keystore.properties` in the repo root (gitignored). The keystore uses a single password, so `storePassword` covers both the store and the key:
    ```properties
    storeFile=app/release/sportified-signage-release.jks
    storePassword=<password>
    keyAlias=signage
-   keyPassword=<password>
    ```
 3. `./gradlew assembleRelease` now signs with the release key. Verify with:
    `apksigner verify --print-certs app/build/outputs/apk/release/<apk>.apk`
