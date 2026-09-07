@@ -40,6 +40,31 @@ The exact rules agents must follow — identity, issue→branch→PR workflow, a
   `adb connect <device-ip>:5555 && adb install -r app/build/outputs/apk/debug/app-debug.apk`
 * Run the agent: `opencode`
 
+### Release signing
+
+The release build is signed with a keystore that is **not** committed (see `.gitignore`). To create it on any workstation:
+
+1. Generate a keystore (see `keytool` below). The recommended location is `app/release/`. Use a **single password** for both the store and the key:
+   ```sh
+   mkdir -p app/release
+   keytool -genkeypair -v \
+     -keystore app/release/sportified-signage-release.jks \
+     -alias signage -keyalg RSA -keysize 2048 -validity 10000 \
+     -storepass <password> \
+     -dname "CN=Sportified Signage, O=Sportified, C=US"
+   ```
+2. Create `keystore.properties` in the repo root (gitignored), setting both password fields to that same value:
+   ```properties
+   storeFile=app/release/sportified-signage-release.jks
+   storePassword=<password>
+   keyAlias=signage
+   keyPassword=<password>
+   ```
+3. `./gradlew assembleRelease` now signs with the release key. Verify with:
+   `apksigner verify --print-certs app/build/outputs/apk/release/<apk>.apk`
+
+If `keystore.properties` is absent, `assembleRelease` still succeeds but falls back to debug signing with a warning, so the default build never breaks on machines without the release key. Back up the keystore somewhere safe — it is the signing identity, and losing it means you can no longer update a published app.
+
 ### Host requirements
 
 The dev container itself needs only **Docker** and the **VS Code Dev Containers** extension (`ms-vscode-remote.remote-containers`). Everything else — JDK, Android SDK, Gradle, adb, emulator — is inside the container. To see and interact with the emulator from your desktop you additionally install `scrcpy` and `adb` on the host.

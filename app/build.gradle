@@ -3,9 +3,32 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// Release signing. keystore.properties is gitignored; create it with the
+// keytool command documented in README.md ("Release signing"). When it is
+// absent the release build falls back to debug signing so assembleRelease
+// still works on workstations that don't hold the release keystore.
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def hasReleaseKeystore = false
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+    hasReleaseKeystore = true
+}
+
 android {
     namespace 'net.sportified.signage'
     compileSdk 36
+
+    signingConfigs {
+        release {
+            if (hasReleaseKeystore) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "net.sportified.signage"
@@ -20,6 +43,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasReleaseKeystore) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+                logger.warn("keystore.properties not found - release build will be debug-signed. See README.md 'Release signing'.")
+            }
         }
         applicationVariants.all{
             variant ->
