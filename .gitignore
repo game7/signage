@@ -15,3 +15,7 @@
 .cxx
 local.properties
 screen.png
+keystore.properties
+*.jks
+*.keystore
+/app/release

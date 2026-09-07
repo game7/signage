@@ -3,9 +3,41 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// Release signing. keystore.properties is gitignored and is the single source
+// of truth: it holds the store password, key alias, and the keystore itself
+// (base64-encoded). The .jks file is reconstructed from it at build time, so
+// there is only one thing to keep and restore. When keystore.properties is
+// absent the release build falls back to debug signing so assembleRelease
+// still works on workstations that don't hold the release keystore.
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def releaseKeystoreFile = rootProject.file('app/release/sportified-signage-release.jks')
+def hasReleaseKeystore = false
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+    if (keystoreProperties['keystoreBase64']) {
+        releaseKeystoreFile.parentFile.mkdirs()
+        if (!releaseKeystoreFile.exists()) {
+            releaseKeystoreFile.bytes = Base64.getDecoder().decode(keystoreProperties['keystoreBase64'])
+        }
+    }
+    hasReleaseKeystore = true
+}
+
 android {
     namespace 'net.sportified.signage'
     compileSdk 36
+
+    signingConfigs {
+        release {
+            if (hasReleaseKeystore) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['storePassword']
+                storeFile releaseKeystoreFile
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "net.sportified.signage"
@@ -20,6 +52,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasReleaseKeystore) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+                logger.warn("keystore.properties not found - release build will be debug-signed. See README.md 'Release signing'.")
+            }
         }
         applicationVariants.all{
             variant ->

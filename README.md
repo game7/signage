@@ -40,6 +40,37 @@ The exact rules agents must follow — identity, issue→branch→PR workflow, a
   `adb connect <device-ip>:5555 && adb install -r app/build/outputs/apk/debug/app-debug.apk`
 * Run the agent: `opencode`
 
+### Release signing
+
+Release signing is driven by a single gitignored file: `keystore.properties`. It holds the store password, the key alias, and the keystore itself (base64-encoded) — the build reconstructs the `.jks` from it, so there is exactly **one thing** to generate, back up, and restore.
+
+Create it once on any machine:
+
+1. Generate a keystore. Use a **single password** for the store and the key:
+   ```sh
+   mkdir -p app/release
+   keytool -genkeypair -v \
+     -keystore app/release/sportified-signage-release.jks \
+     -alias signage -keyalg RSA -keysize 2048 -validity 10000 \
+     -storepass <password> \
+     -dname "CN=Sportified Signage, O=Sportified, C=US"
+   ```
+2. Encode it and write `keystore.properties` in the repo root:
+   ```sh
+   base64 -w0 app/release/sportified-signage-release.jks
+   ```
+   ```properties
+   storePassword=<password>
+   keyAlias=signage
+   keystoreBase64=<base64 blob from the command above>
+   ```
+3. `./gradlew assembleRelease` now signs with the release key (the `.jks` is written back to `app/release/` on first build). Verify with:
+   `apksigner verify --print-certs app/build/outputs/apk/release/<apk>.apk`
+
+**Back up the entire contents of `keystore.properties`** (password + base64) somewhere safe, e.g. a Bitwarden entry — that single blob is the whole signing identity. On a new workstation, create `keystore.properties` with that blob and build; nothing else to copy.
+
+If `keystore.properties` is absent, `assembleRelease` still succeeds but falls back to debug signing with a warning, so the default build never breaks on machines without the release key. Losing the file means you can no longer update a published app — the signing key can't be rotated.
+
 ### Host requirements
 
 The dev container itself needs only **Docker** and the **VS Code Dev Containers** extension (`ms-vscode-remote.remote-containers`). Everything else — JDK, Android SDK, Gradle, adb, emulator — is inside the container. To see and interact with the emulator from your desktop you additionally install `scrcpy` and `adb` on the host.
