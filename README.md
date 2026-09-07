@@ -10,6 +10,10 @@ This application is currently not published to the Amazon App Store (yet) and th
 
 The repo ships with a [dev container](.devcontainer/) so the environment is identical on any machine (Windows, macOS, Linux) without installing Android Studio. It provides JDK 17, the Android SDK, Gradle, `adb`, and [opencode](https://opencode.ai).
 
+### Demo mode
+
+A fresh install shows a bundled, network-free **demo** (a Sportified-branded rotating display) so the app always demonstrates itself — this is what Amazon Appstore reviewers see on first launch. To point the player at your own content: **Settings → URL**, turn **Demo content** off, and enter your URL (or press the *Set to* button for the default Sportified screen URL). Demo mode persists until you switch it off.
+
 ## Operating model: humans + agents
 
 This repo is developed by a human and automated agents, and their work is deliberately kept distinct.

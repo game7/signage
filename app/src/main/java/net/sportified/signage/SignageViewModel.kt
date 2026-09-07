@@ -78,11 +78,26 @@ class SignageViewModel(app: Application) : AndroidViewModel(app) {
         return@lazy live
     }
 
+    // Demo mode defaults to true so a fresh install shows bundled demo content
+    // instead of an unpaired (device-key) screen. Choosing a real URL in
+    // settings switches it off.
+    val demoMode by lazy {
+        val live = MutableLiveData(preferences.getBoolean("DEMO_MODE", true))
+        live.observeForever {
+            with(preferences.edit()) {
+                putBoolean("DEMO_MODE", live.value!!)
+                commit()
+            }
+        }
+        return@lazy live
+    }
+
     private val preferences: SharedPreferences
         get() = getApplication<Application>().getSharedPreferences("SIGNAGE", Context.MODE_PRIVATE)
 
     fun setDefaultUrl() {
         url.value = DEFAULT_URL
+        demoMode.value = false
     }
 
     fun log(message: String) {
@@ -94,6 +109,9 @@ class SignageViewModel(app: Application) : AndroidViewModel(app) {
         const val ROTATION_PORTRAIT = -90
         const val ROTATION_REVERSE_PORTRAIT = 90
         const val ROTATION_REVERSE_LANDSCAPE = 180
+        // Bundled, network-free demo content shown on first launch so a fresh
+        // install always displays something meaningful (e.g. for Appstore review).
+        const val DEMO_URL = "file:///android_asset/demo.html"
     }
 
 }
